@@ -32,7 +32,7 @@ are gitignored.
 | # | Project | What it covers | Status |
 |---|---------|----------------|--------|
 | 01 | [Switches to LEDs](project-1/) | Combinational assignment, pin constraints, full build flow | Done |
-| 02 | LUT | Boolean logic, look-up tables | Planned |
+| 02 | [LUT](project-2/) | Boolean logic, look-up tables | Done |
 | 03 | Flip-Flop | Registers, clocked logic | Planned |
 | 04 | Debounce | Counter-based switch debouncing | Planned |
 | 05 | Seven Segment | BCD to seven-segment decode, display multiplexing | Planned |
