@@ -34,7 +34,7 @@ are gitignored.
 | 01 | [Switches to LEDs](project-1/) | Combinational assignment, pin constraints, full build flow | Done |
 | 02 | [LUT](project-2/) | Boolean logic, look-up tables | Done |
 | 03 | [Flip-Flop](project-3/) | Registers, clocked logic | Done |
-| 04 | Debounce | Counter-based switch debouncing | Planned |
+| 04 | [Debounce](project-4/) | Counter-based switch debouncing | Done |
 | 05 | Seven Segment | BCD to seven-segment decode, display multiplexing | Planned |
 | 06 | Simulation | Testbench structure, waveform inspection | Planned |
 | 07 | UART RX | Oversampled serial receive, start-bit detection | Planned |
