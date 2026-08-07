@@ -46,19 +46,34 @@ depends on `sim`, so it does both in one step.
 ## Serial
 
 The Go Board's FTDI chip exposes two channels. Channel A is the JTAG/config
-port `iceprog` uses; channel B is the UART. On macOS they show up as a pair,
-and the UART is the higher-numbered one:
+port `iceprog` uses; channel B is the UART. On macOS they show up as a
+consecutive pair, and the UART is the higher-numbered one:
 
-    /dev/cu.usbserial-1400      # channel A, programming
-    /dev/cu.usbserial-1401      # channel B, UART
+    ls /dev/cu.usbserial-*
+    /dev/cu.usbserial-21400     # channel A, programming
+    /dev/cu.usbserial-21401     # channel B, UART
+
+Those digits come from the USB location ID, so they change whenever the board
+is plugged into a different port. Glob for the UART rather than hardcoding it:
+
+    PORT=$(ls /dev/cu.usbserial-*1 | tail -1)
 
 Use the `cu.*` node rather than `tty.*` — `tty.*` blocks waiting on carrier
 detect. To send a byte at 115200 baud:
 
-    exec 3<>/dev/cu.usbserial-1401
-    stty -f /dev/cu.usbserial-1401 115200 cs8 -cstopb -parenb raw -echo
+    exec 3<>"$PORT"
+    stty -f "$PORT" 115200 cs8 -cstopb -parenb raw -echo
     printf '7' >&3
     exec 3>&-
+
+To open an interactive session instead, where a loopback design echoes back
+whatever you type:
+
+    screen "$PORT" 115200          # quit with Ctrl-A K, then y
+
+`screen` does not locally echo on a serial port — every character you see came
+back from the board. Run it from Terminal.app or iTerm rather than the VS Code
+integrated terminal, which swallows `Ctrl-A` and leaves no way to quit.
 
 Holding the descriptor open on fd 3 matters. macOS resets a serial device's
 termios settings when the last descriptor on it closes, so `stty` followed by a
@@ -73,10 +88,10 @@ commands and the board receives garbage.
 | 02 | [LUT](project-2/) | Boolean logic, look-up tables | Done |
 | 03 | [Flip-Flop](project-3/) | Registers, clocked logic | Done |
 | 04 | [Debounce](project-4/) | Counter-based switch debouncing | Done |
-| 05 | [Seven Segment](project-5/) | BCD to seven-segment decode, display multiplexing | Done |
+| 05 | [Seven Segment](project-5/) | Hex to seven-segment decode, debounced switch driving a single digit | Done |
 | 06 | [Simulation](project-6/) | Testbench structure, waveform inspection | Done |
 | 07 | [UART RX](project-7/) | Oversampled serial receive, start-bit detection, hex display of the received byte | Done |
-| 08 | UART TX | Serial transmit state machine | Planned |
+| 08 | [UART Loopback](project-8/) | Serial transmit state machine, echoing each received byte back while displaying it | Done |
 | 09 | VGA | Sync generation, test patterns | Planned |
 | 10 | Pong | Full design: VGA output, game state machine, score display | Planned |
 
