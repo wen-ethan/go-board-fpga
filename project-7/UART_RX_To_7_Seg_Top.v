@@ -1,6 +1,8 @@
 module UART_RX_To_7_Seg_Top(
     input i_Clk,
     input i_UART_RX,
+
+    // Segment 1 is the left digit, Segment 2 is the right digit
     output o_Segment1_A,
     output o_Segment1_B,
     output o_Segment1_C,
