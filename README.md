@@ -45,40 +45,20 @@ depends on `sim`, so it does both in one step.
 
 ## Serial
 
-The Go Board's FTDI chip exposes two channels. Channel A is the JTAG/config
-port `iceprog` uses; channel B is the UART. On macOS they show up as a
-consecutive pair, and the UART is the higher-numbered one:
+Connect to the board's UART at 115200 baud:
 
-    ls /dev/cu.usbserial-*
-    /dev/cu.usbserial-21400     # channel A, programming
-    /dev/cu.usbserial-21401     # channel B, UART
+    screen $(ls /dev/cu.usbserial-*1 | tail -1) 115200
 
-Those digits come from the USB location ID, so they change whenever the board
-is plugged into a different port. Glob for the UART rather than hardcoding it:
+Quit with `Ctrl-A` `K`, then `y`. Run it from Terminal.app or iTerm rather than
+the VS Code integrated terminal, which swallows `Ctrl-A` and leaves no way out.
 
-    PORT=$(ls /dev/cu.usbserial-*1 | tail -1)
+The Go Board's FTDI chip exposes two channels: channel A is the JTAG/config
+port `iceprog` uses, channel B is the UART. The glob picks channel B, whose
+digits come from the USB location ID and change whenever the board is plugged
+into a different port.
 
-Use the `cu.*` node rather than `tty.*` — `tty.*` blocks waiting on carrier
-detect. To send a byte at 115200 baud:
-
-    exec 3<>"$PORT"
-    stty -f "$PORT" 115200 cs8 -cstopb -parenb raw -echo
-    printf '7' >&3
-    exec 3>&-
-
-To open an interactive session instead, where a loopback design echoes back
-whatever you type:
-
-    screen "$PORT" 115200          # quit with Ctrl-A K, then y
-
-`screen` does not locally echo on a serial port — every character you see came
-back from the board. Run it from Terminal.app or iTerm rather than the VS Code
-integrated terminal, which swallows `Ctrl-A` and leaves no way to quit.
-
-Holding the descriptor open on fd 3 matters. macOS resets a serial device's
-termios settings when the last descriptor on it closes, so `stty` followed by a
-separate `printf > /dev/...` silently reverts to 9600 baud between the two
-commands and the board receives garbage.
+`screen` does not locally echo on a serial port, so a blank terminal means the
+board is not transmitting — every character you see came back from the FPGA.
 
 ## Projects
 
