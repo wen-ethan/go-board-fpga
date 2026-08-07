@@ -40,7 +40,7 @@ are gitignored.
 | 02 | [LUT](project-2/) | Boolean logic, look-up tables | Done |
 | 03 | [Flip-Flop](project-3/) | Registers, clocked logic | Done |
 | 04 | [Debounce](project-4/) | Counter-based switch debouncing | Done |
-| 05 | Seven Segment | BCD to seven-segment decode, display multiplexing | Planned |
+| 05 | [Seven Segment](project-5/) | BCD to seven-segment decode, display multiplexing | Done |
 | 06 | Simulation | Testbench structure, waveform inspection | Planned |
 | 07 | UART RX | Oversampled serial receive, start-bit detection | Planned |
 | 08 | UART TX | Serial transmit state machine | Planned |
