@@ -21,8 +21,13 @@ From the repo root:
     make PROJ=project-1 prog
 
 Each project directory holds its sources and a `project.mk` naming the top
-module. Pin constraints are shared across projects in
+module in `TOP` and its own files in `SRC`. Reusable modules live in
+[common/](common/) and are pulled in per project by listing them in `COMMON`.
+Pin constraints are shared across projects in
 [constraints/Go_Board_Constraints.pcf](constraints/Go_Board_Constraints.pcf).
+
+Every module a design instantiates has to be named in `SRC` or `COMMON` —
+yosys only sees the files the Makefile hands it.
 
 Generated files (`.json`, `.asc`, `.bin`, `.rpt`) land next to the sources and
 are gitignored.

@@ -4,7 +4,8 @@ include $(PROJ)/project.mk
 
 PCF     = constraints/Go_Board_Constraints.pcf
 DEVICE  = --hx1k --package vq100
-SOURCES = $(addprefix $(PROJ)/,$(SRC))
+# SRC is per-project, COMMON is shared modules from common/
+SOURCES = $(addprefix $(PROJ)/,$(SRC)) $(addprefix common/,$(COMMON))
 OUT     = $(PROJ)/$(TOP)
 
 all: $(OUT).bin
