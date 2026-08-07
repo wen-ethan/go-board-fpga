@@ -43,6 +43,28 @@ Projects with a testbench name it in `project.mk` as `TB`:
 the testbench stays relative and `dump.vcd` lands next to the sources. `wave`
 depends on `sim`, so it does both in one step.
 
+## Serial
+
+The Go Board's FTDI chip exposes two channels. Channel A is the JTAG/config
+port `iceprog` uses; channel B is the UART. On macOS they show up as a pair,
+and the UART is the higher-numbered one:
+
+    /dev/cu.usbserial-1400      # channel A, programming
+    /dev/cu.usbserial-1401      # channel B, UART
+
+Use the `cu.*` node rather than `tty.*` — `tty.*` blocks waiting on carrier
+detect. To send a byte at 115200 baud:
+
+    exec 3<>/dev/cu.usbserial-1401
+    stty -f /dev/cu.usbserial-1401 115200 cs8 -cstopb -parenb raw -echo
+    printf '7' >&3
+    exec 3>&-
+
+Holding the descriptor open on fd 3 matters. macOS resets a serial device's
+termios settings when the last descriptor on it closes, so `stty` followed by a
+separate `printf > /dev/...` silently reverts to 9600 baud between the two
+commands and the board receives garbage.
+
 ## Projects
 
 | # | Project | What it covers | Status |
@@ -53,7 +75,7 @@ depends on `sim`, so it does both in one step.
 | 04 | [Debounce](project-4/) | Counter-based switch debouncing | Done |
 | 05 | [Seven Segment](project-5/) | BCD to seven-segment decode, display multiplexing | Done |
 | 06 | [Simulation](project-6/) | Testbench structure, waveform inspection | Done |
-| 07 | UART RX | Oversampled serial receive, start-bit detection | Planned |
+| 07 | [UART RX](project-7/) | Oversampled serial receive, start-bit detection, hex display of the received byte | Done |
 | 08 | UART TX | Serial transmit state machine | Planned |
 | 09 | VGA | Sync generation, test patterns | Planned |
 | 10 | Pong | Full design: VGA output, game state machine, score display | Planned |
