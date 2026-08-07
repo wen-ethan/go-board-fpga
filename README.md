@@ -4,21 +4,21 @@ Verilog designs for the Nandland Go Board (Lattice iCE40-HX1K, VQ100, 25 MHz),
 built with the open-source toolchain instead of Lattice iCEcube2.
 
 Toolchain: Yosys (synthesis), nextpnr-ice40 (place and route), IceStorm for
-`icepack`, `icetime`, and `iceprog`. Everything runs from a single Makefile on
-macOS.
+`icepack`, `icetime`, and `iceprog`, plus Icarus Verilog and GTKWave for
+simulation. Everything runs from a single Makefile on macOS.
 
 ## Build
 
-From the repo root:
+From the repo root, where `PROJ` picks the project:
 
-    make          # synthesize, place and route, pack the bitstream
-    make prog     # flash the board over USB
-    make timing   # icetime timing report
-    make clean    # remove generated files
+    make PROJ=project-x           # synthesize, place and route, pack the bitstream
+    make PROJ=project-x prog      # flash the board over USB
+    make PROJ=project-x timing    # icetime timing report
+    make PROJ=project-x sim       # run the testbench under Icarus Verilog
+    make PROJ=project-x wave      # run the testbench, then open the waves in GTKWave
+    make PROJ=project-x clean     # remove generated files
 
-`PROJ` picks the project and defaults to `project-1`:
-
-    make PROJ=project-1 prog
+`PROJ` defaults to `project-1` when left off.
 
 Each project directory holds its sources and a `project.mk` naming the top
 module in `TOP` and its own files in `SRC`. Reusable modules live in
@@ -29,8 +29,19 @@ Pin constraints are shared across projects in
 Every module a design instantiates has to be named in `SRC` or `COMMON` —
 yosys only sees the files the Makefile hands it.
 
-Generated files (`.json`, `.asc`, `.bin`, `.rpt`) land next to the sources and
-are gitignored.
+Generated files (`.json`, `.asc`, `.bin`, `.rpt`, `.vvp`, `.vcd`) land next to
+the sources and are gitignored.
+
+## Simulate
+
+Projects with a testbench name it in `project.mk` as `TB`:
+
+    make PROJ=project-6 sim     # compile with iverilog, run under vvp
+    make PROJ=project-6 wave    # same, then open the VCD in GTKWave
+
+`sim` runs `vvp` from inside the project directory, so the `$dumpfile` path in
+the testbench stays relative and `dump.vcd` lands next to the sources. `wave`
+depends on `sim`, so it does both in one step.
 
 ## Projects
 
@@ -41,14 +52,14 @@ are gitignored.
 | 03 | [Flip-Flop](project-3/) | Registers, clocked logic | Done |
 | 04 | [Debounce](project-4/) | Counter-based switch debouncing | Done |
 | 05 | [Seven Segment](project-5/) | BCD to seven-segment decode, display multiplexing | Done |
-| 06 | Simulation | Testbench structure, waveform inspection | Planned |
+| 06 | [Simulation](project-6/) | Testbench structure, waveform inspection | Done |
 | 07 | UART RX | Oversampled serial receive, start-bit detection | Planned |
 | 08 | UART TX | Serial transmit state machine | Planned |
 | 09 | VGA | Sync generation, test patterns | Planned |
 | 10 | Pong | Full design: VGA output, game state machine, score display | Planned |
 
-Simulation targets (Icarus Verilog and GTKWave) get added at project 06, where
-the tutorial series introduces testbenches.
+Project 06 is a blinker driven by four counters, and is where the tutorial
+series introduces testbenches — the `sim` and `wave` targets arrive with it.
 
 ## Scope
 
